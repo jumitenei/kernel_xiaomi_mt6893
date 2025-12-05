@@ -38,5 +38,3 @@ struct elliptic_device {
 };
 
 extern struct class *elliptic_class;
-
-

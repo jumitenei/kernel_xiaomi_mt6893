@@ -8,6 +8,8 @@
 #pragma once
 
 #include <linux/types.h>
+#include <linux/kfifo.h>
+#include <linux/interrupt.h>
 
 #define ELLIPTIC_DEBUG_DATA_SIZE 512
 #define ELLIPTIC_IPI_AP_TO_SCP_DATA_SIZE 40
@@ -64,4 +66,10 @@ struct scp_elliptic_reserved_mem_t {
 	phys_addr_t virt;
 	phys_addr_t size;
 	int reserved;
+};
+
+struct elliptic_ipi_handler_data_t {
+	struct kfifo fifo;
+	struct tasklet_struct handle_task;
+	uint32_t task_running;
 };

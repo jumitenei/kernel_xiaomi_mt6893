@@ -829,7 +829,9 @@ int elliptic_system_configuration_param_put(
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
 	struct elliptic_system_configuration_parameter param;
-	struct timeval tv;
+	struct timespec tv;
+	int32_t myres=0;
+	pr_err("[ELUS] %s: enter\n", __func__);
 
 	if (mc->reg != ELLIPTIC_SYSTEM_CONFIGURATION)
 		return -EINVAL;
@@ -901,6 +903,7 @@ int elliptic_system_configuration_param_put(
 		param.type = ESCPT_OPERATION_MODE;
 		param.operation_mode =
 			elliptic_system_configuration_cache.operation_mode;
+		pr_err("[ELUS] %s: OPERATION_MODE:%d\n", __func__,param.operation_mode);
 		break;
 
 	case ELLIPTIC_SYSTEM_CONFIGURATION_OPERATION_MODE_FLAGS:
@@ -952,7 +955,9 @@ int elliptic_system_configuration_param_put(
 		param.type = ESCPT_CALIBRATION_METHOD;
 		param.calibration_method =
 		elliptic_system_configuration_cache.calibration_method;
-		do_gettimeofday(&tv);
+		getnstimeofday(&tv);
+
+
 		param.calibration_timestamp = (int32_t)tv.tv_sec;
 		break;
 	case ELLIPTIC_SYSTEM_CONFIGURATION_DEBUG_MODE:
@@ -993,9 +998,10 @@ int elliptic_system_configuration_param_put(
 	default:
 		return -EINVAL;
 	}
-
-	return elliptic_data_write(ELLIPTIC_ULTRASOUND_SET_PARAMS,
+	myres=elliptic_data_write(ELLIPTIC_ULTRASOUND_SET_PARAMS,
 				  (const char *)&param, sizeof(param));
+	pr_err("[ELUS] %s: -exit\n", __func__);
+	return myres;
 }
 
 
@@ -1323,16 +1329,16 @@ static const struct snd_kcontrol_new ultrasound_filter_mixer_controls[] = {
 
 };
 
-
-
 unsigned int elliptic_add_platform_controls(void *platform)
 {
 	const unsigned int num_controls =
 		ARRAY_SIZE(ultrasound_filter_mixer_controls);
 
+	pr_err("[ELUS] enter init control");
+
 	if (platform != NULL) {
-		snd_soc_add_platform_controls(
-			(struct snd_soc_platform *)platform,
+		snd_soc_add_component_controls(
+			(struct snd_soc_component *)platform,
 			ultrasound_filter_mixer_controls,
 			num_controls);
 	} else {
@@ -1341,6 +1347,7 @@ unsigned int elliptic_add_platform_controls(void *platform)
 
 	return num_controls;
 }
+EXPORT_SYMBOL(elliptic_add_platform_controls);
 
 
 int elliptic_trigger_version_msg(void)
@@ -1378,3 +1385,6 @@ int elliptic_trigger_diagnostics_msg(void)
 		ELLIPTIC_ULTRASOUND_SET_PARAMS,
 		(const char *)msg, sizeof(msg));
 }
+MODULE_AUTHOR("Elliptic Labs");
+MODULE_DESCRIPTION("Providing Interface to UPS data");
+MODULE_LICENSE("GPL");
