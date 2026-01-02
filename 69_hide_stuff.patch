@@ -1,0 +1,19 @@
+diff --git a/drivers/kernelsu/ksu.c b/drivers/kernelsu/ksu.c
+index 1234567..89abcde 100644
+--- a/drivers/kernelsu/ksu.c
++++ b/drivers/kernelsu/ksu.c
+@@ -1,6 +1,15 @@
+ #include <linux/module.h>
+ #include <linux/fs.h>
+ #include <linux/uaccess.h>
++
++/*
++ * MODULE_IMPORT_NS was introduced in Linux 5.18.
++ * Older kernels (e.g. 4.14) do not support symbol namespaces.
++ * Define it as a no-op for compatibility.
++ */
++#ifndef MODULE_IMPORT_NS
++#define MODULE_IMPORT_NS(ns)
++#endif
++
+ MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);
