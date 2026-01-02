@@ -1,16 +1,14 @@
 diff --git a/drivers/kernelsu/ksu.c b/drivers/kernelsu/ksu.c
-index 1234567..89abcde 100644
 --- a/drivers/kernelsu/ksu.c
 +++ b/drivers/kernelsu/ksu.c
-@@ -1,6 +1,15 @@
+@@ -1,3 +1,12 @@
  #include <linux/module.h>
  #include <linux/fs.h>
  #include <linux/uaccess.h>
 +
 +/*
-+ * MODULE_IMPORT_NS was introduced in Linux 5.18.
-+ * Older kernels (e.g. 4.14) do not support symbol namespaces.
-+ * Define it as a no-op for compatibility.
++ * MODULE_IMPORT_NS is not available on Linux 4.14.
++ * Define it as a no-op for backward compatibility.
 + */
 +#ifndef MODULE_IMPORT_NS
 +#define MODULE_IMPORT_NS(ns)
